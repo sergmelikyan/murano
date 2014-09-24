@@ -165,6 +165,7 @@ networking_opts = [
                help='Name of the router that going to be used in order to '
                     'join all networks created by Murano')
 ]
+
 stats_opt = [
     cfg.IntOpt('period', default=5,
                help=_('Statistics collection interval in minutes.'
@@ -197,6 +198,14 @@ packages_opts = [
                     'pagination request')
 ]
 
+bigip_opts = [
+    cfg.StrOpt('hostname', default='localhost'),
+
+    cfg.StrOpt('username', default='admin'),
+
+    cfg.StrOpt('password', default='admin')
+]
+
 CONF = cfg.CONF
 CONF.register_opts(paste_deploy_opts, group='paste_deploy')
 CONF.register_cli_opts(bind_opts)
@@ -212,6 +221,7 @@ CONF.register_cli_opt(metadata_dir)
 CONF.register_opts(packages_opts, group='packages_opts')
 CONF.register_opts(stats_opt, group='stats')
 CONF.register_opts(networking_opts, group='networking')
+CONF.register_opts(bigip_opts, group='bigip')
 
 
 def parse_args(args=None, usage=None, default_config_files=None):
