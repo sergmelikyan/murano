@@ -75,3 +75,9 @@ class BigIpApi(murano_object.MuranoObject):
             pool_names=['/Common/%s' % name],
             lb_methods=[balancingMethod]
         )
+        
+    # noinspection PyPep8Naming
+    def addRule(self, name, definition):
+        self.bigip.LocalLB.Rule.create(
+            rules=[{'rule_name': name, 'rule_definition': definition}]
+        )
