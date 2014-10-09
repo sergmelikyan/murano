@@ -16,6 +16,7 @@
 import bigsuds
 
 import murano.common.config as config
+import murano.dsl.helpers as helpers
 import murano.dsl.murano_class as murano_class
 import murano.dsl.murano_object as murano_object
 import murano.openstack.common.log as logging
@@ -27,6 +28,8 @@ LOG = logging.getLogger(__name__)
 class BigIpApi(murano_object.MuranoObject):
     def initialize(self, _context):
         bigip_settings = config.CONF.bigip
+        environment = helpers.get_environment(_context)
+        self.partition_name = 'uuid_%s' % environment.tenant_id
 
         self.bigip = bigsuds.BIGIP(
             hostname=bigip_settings.hostname,
@@ -62,8 +65,12 @@ class BigIpApi(murano_object.MuranoObject):
 
     # noinspection PyPep8Naming
     def addMember(self, name, port, address):
+        pool_name = '/{partition}/{pool_name}'.format(
+            partition=self.partition_name,
+            pool_name=name
+        )
         self.bigip.LocalLB.Pool.add_member_v2(
-            pool_names=['/Common/%s' % name],
+            pool_names=[pool_name],
             members=[[{
                 'port': port,
                 'address': address}]]
@@ -71,13 +78,36 @@ class BigIpApi(murano_object.MuranoObject):
 
     # noinspection PyPep8Naming
     def setBalancingMethod(self, name, balancingMethod):
+        pool_name = '/{partition}/{pool_name}'.format(
+            partition=self.partition_name,
+            pool_name=name
+        )
         self.bigip.LocalLB.Pool.set_lb_method(
-            pool_names=['/Common/%s' % name],
+            pool_names=[pool_name],
             lb_methods=[balancingMethod]
         )
-        
+
     # noinspection PyPep8Naming
     def addRule(self, name, definition):
         self.bigip.LocalLB.Rule.create(
             rules=[{'rule_name': name, 'rule_definition': definition}]
         )
+
+    # noinspection PyPep8Naming
+    def assignRule(self, name, virtual_server):
+        virtual_server_name = '/{partition}/{virtual_server_name}'.format(
+            partition=self.partition_name,
+            virtual_server_name=virtual_server
+        )
+        self.bigip.LocalLB.VirtualServer.add_profile(
+            virtual_servers=[virtual_server_name],
+            profiles=[[{
+                'profile_context': 'PROFILE_CONTEXT_TYPE_ALL',
+                'profile_name': 'http'
+            }]]
+        )
+        self.bigip.LocalLB.VirtualServer.add_rule(
+            virtual_servers=[virtual_server_name],
+            rules=[[{'rule_name': name, 'priority': 0}]]
+        )
+
