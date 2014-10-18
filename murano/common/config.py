@@ -202,6 +202,14 @@ packages_opts = [
                     'pagination request')
 ]
 
+zabbix_opts = [
+    cfg.StrOpt('hostname', default='localhost'),
+    cfg.StrOpt('username', default='admin'),
+    cfg.StrOpt('password', default='zabbix')
+]
+
+
+
 CONF = cfg.CONF
 CONF.register_opts(paste_deploy_opts, group='paste_deploy')
 CONF.register_cli_opts(bind_opts)
@@ -217,7 +225,7 @@ CONF.register_cli_opt(metadata_dir)
 CONF.register_opts(packages_opts, group='packages_opts')
 CONF.register_opts(stats_opt, group='stats')
 CONF.register_opts(networking_opts, group='networking')
-
+CONF.register_opts(zabbix_opts, group='zabbix')
 
 def parse_args(args=None, usage=None, default_config_files=None):
     CONF(args=args,

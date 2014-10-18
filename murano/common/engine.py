@@ -29,6 +29,7 @@ from murano.dsl import results_serializer
 from murano.engine import environment
 from murano.engine import package_class_loader
 from murano.engine import package_loader
+import murano.engine.contrib.contrib_objects as contrib_objects
 from murano.engine.system import status_reporter
 import murano.engine.system.system_objects as system_objects
 from murano.openstack.common.gettextutils import _  # noqa
@@ -109,6 +110,7 @@ class TaskExecutor(object):
         with package_loader.ApiPackageLoader(token, tenant_id) as pkg_loader:
             class_loader = package_class_loader.PackageClassLoader(pkg_loader)
             system_objects.register(class_loader, pkg_loader)
+            contrib_objects.register(class_loader)
 
             exc = executor.MuranoDslExecutor(class_loader, self.environment)
             obj = exc.load(self.model)
