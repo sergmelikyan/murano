@@ -14,7 +14,9 @@
 # limitations under the License.
 
 from murano.engine.contrib import zabbix
+from murano.engine.contrib import vyatta
 
 
 def register(class_loader):
     class_loader.import_class(zabbix.ZabbixApi)
+    class_loader.import_class(vyatta.VyattaApi)

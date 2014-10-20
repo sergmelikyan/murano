@@ -48,16 +48,6 @@ def main():
         request_statistics.init_stats()
         policy.init()
 
-        # # **********************************************
-        # from murano.engine.contrib import zabbix
-        # zb = zabbix.ZabbixApi()
-        # zb.initialize(None)
-        # zb.addProbe('HTTP', '172.16.40.197', 'srv')
-        #
-        # # **********************************************
-        #
-        #
-        # return
         launcher = service.ServiceLauncher()
 
         app = config.load_paste_app('murano')
